@@ -38,7 +38,7 @@ contract Bet {
 
 
 // @groundtruth: False
-rule Running_example1 {
+rule Winnability {
     (rate > 100 && player_has_joined && block.number > deadline)
     -> 
     exists a : address .
@@ -50,7 +50,7 @@ rule Running_example1 {
 }
 
 // @groundtruth: False
-rule Running_example2 {
+rule Liquidity {
     player_has_joined
     ->
     exists a1 : address .
@@ -66,7 +66,7 @@ rule Running_example2 {
 
 
 // @groundtruth: True
-rule Running_example3_Frontrun_simple {
+rule Frontrunning {
     (player_has_joined)
     ->
     (

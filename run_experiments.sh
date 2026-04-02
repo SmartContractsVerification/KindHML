@@ -20,12 +20,12 @@
  python src/kindHML.py contracts/vault/vault_v2.sol Two_steps_drainability_non_inflation 2 1000
  python src/kindHML.py contracts/vault/vault_v3.sol Two_steps_drainability 2 1000
  python src/kindHML.py contracts/vault/vault_v3.sol Two_steps_drainability_non_inflation 2 1000
- python src/kindHML.py contracts/price-bet/price-bet.sol Running_example1 2 1000
- python src/kindHML.py contracts/price-bet/price-bet.sol Running_example2 2 1000
- python src/kindHML.py contracts/price-bet/price-bet.sol Running_example3_Frontrun_simple 2 1000
- python src/kindHML.py contracts/price-bet/price-bet_v2.sol Running_example1 2 1000
- python src/kindHML.py contracts/price-bet/price-bet_v2.sol Running_example2 2 1000
- python src/kindHML.py contracts/price-bet/price-bet_v2.sol Running_example3_Frontrun_simple 2 1000    
- python src/kindHML.py contracts/price-bet/price-bet_v3.sol Running_example1 2 1000
- python src/kindHML.py contracts/price-bet/price-bet_v3.sol Running_example2 2 1000
- python src/kindHML.py contracts/price-bet/price-bet_v3.sol Running_example3_Frontrun_simple 2 1000
+ python src/kindHML.py contracts/price-bet/price-bet.sol Winnability 2 1000
+ python src/kindHML.py contracts/price-bet/price-bet.sol Liquidity 2 1000
+ python src/kindHML.py contracts/price-bet/price-bet.sol Frontrunning 2 1000
+ python src/kindHML.py contracts/price-bet/price-bet_v2.sol Winnability 2 1000
+ python src/kindHML.py contracts/price-bet/price-bet_v2.sol Liquidity 2 1000
+ python src/kindHML.py contracts/price-bet/price-bet_v2.sol Frontrunning 2 1000    
+ python src/kindHML.py contracts/price-bet/price-bet_v3.sol Winnability 2 1000
+ python src/kindHML.py contracts/price-bet/price-bet_v3.sol Liquidity 2 1000
+ python src/kindHML.py contracts/price-bet/price-bet_v3.sol Frontrunning 2 1000

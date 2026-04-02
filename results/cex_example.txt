@@ -115,7 +115,7 @@ Counterexample:
 --------------------------------------------------------------------------------
 Summary of properties:
 --------------------------------------------------------------------------------
-Running_example1: invalid after 1 steps
+Winnability: invalid after 1 steps
 ================================================================================
 
 <Note> System divv has no property, skipping verification step.
