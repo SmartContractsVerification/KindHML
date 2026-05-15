@@ -3,6 +3,8 @@ import re
 import sys
 import os
 import subprocess
+import shutil
+import argparse
 
 # ANSI color codes for terminal output
 GREEN = '\033[92m'
@@ -96,9 +98,10 @@ def _strip_ansi(text):
     return re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', text)
 
 
-def run_for_property(text, contract, property_name, n_of_participants, timeout, ground_truth_map=None):
+def run_for_property(text, contract, property_name, n_of_participants, timeout, ground_truth_map=None, only_lus=False):
     """Run the full verification pipeline for a single property."""
     contract_base = os.path.basename(contract)
+    contract_name = os.path.splitext(contract_base)[0]
     # Only emit filtered Kind2 summary lines (no extra headings)
     modified_text = remove_other_rules(text, property_name)
 
@@ -133,6 +136,23 @@ def run_for_property(text, contract, property_name, n_of_participants, timeout, 
             print(r1.stderr, end='', file=sys.stderr)
         print(f"Error: translator did not produce {lus_path}", file=sys.stderr)
         return 2
+
+    # Save a copy of the produced Lustre file into `out_lus/` (create dir if needed)
+    try:
+        os.makedirs('out_lus', exist_ok=True)
+        out_lus_filename = f"{contract_name}_{property_name}_{n_of_participants}_{timeout}.lus"
+        out_lus_path = os.path.join('out_lus', out_lus_filename)
+        shutil.copy(lus_path, out_lus_path)
+    except Exception as e:
+        print(f"Warning: failed to save Lustre file to out_lus: {e}", file=sys.stderr)
+
+    # If requested, stop the pipeline after generating the .lus file
+    if only_lus:
+        try:
+            print(f"Saved Lustre file to {out_lus_path}")
+        except NameError:
+            print("Saved Lustre file (path unknown)")
+        return 0
 
     # Step 2: run Kind2 and capture output into a temporary file to avoid direct tty writes
     cmd2 = ['kind2/kind2', 'out/outputTrace.lus', '--smt_solver', 'cvc5', '--timeout', timeout]
@@ -203,8 +223,8 @@ def run_for_property(text, contract, property_name, n_of_participants, timeout, 
                     if m3:
                         time_val = m3.group('time').strip()
                         extra = f', {time_val}s'
-            # Build the base line with contract-name prefix
-            line = f'{contract_base} - {s}{extra}'
+            # Build the base line with contract-name prefix (without .sol extension)
+            line = f'{contract_name} - {s}{extra}'
 
             # Ground truth check
             gt_suffix = ''
@@ -238,21 +258,26 @@ def run_for_property(text, contract, property_name, n_of_participants, timeout, 
 
     # Save results (only the filtered summary)
     os.makedirs('out_results', exist_ok=True)
-    out_path = f"out_results/{contract_base}_{property_name}_{n_of_participants}_{timeout}.out"
+    out_path = f"out_results/{contract_name}_{property_name}_{n_of_participants}_{timeout}.out"
     with open(out_path, 'w') as f:
         f.write(output_to_save)
     return 0
 
 
 def main():
-    if len(sys.argv) != 5:
-        print("Usage: kindHML.py <contract> <property|ALL> <n_of_participants> <timeout>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description='Run KindHML verification pipeline')
+    parser.add_argument('contract', help='Path to the Solidity contract file')
+    parser.add_argument('property', help='Property name or ALL')
+    parser.add_argument('n_of_participants', help='Number of participants')
+    parser.add_argument('timeout', help='Timeout for Kind2 (seconds)')
+    parser.add_argument('--only_lus', action='store_true', help='Stop after generating the .lus file')
+    args = parser.parse_args()
 
-    contract = sys.argv[1]
-    property_name = sys.argv[2]
-    n_of_participants = sys.argv[3]
-    timeout = sys.argv[4]
+    contract = args.contract
+    property_name = args.property
+    n_of_participants = args.n_of_participants
+    timeout = args.timeout
+    only_lus = args.only_lus
 
     # Read the contract file (never modify the original)
     with open(contract, 'r') as f:
@@ -267,12 +292,12 @@ def main():
             sys.exit(1)
         exit_code = 0
         for _, _, name in rules:
-            rc = run_for_property(text, contract, name, n_of_participants, timeout, ground_truth_map)
+            rc = run_for_property(text, contract, name, n_of_participants, timeout, ground_truth_map, only_lus=only_lus)
             if rc != 0:
                 exit_code = rc
         sys.exit(exit_code)
     else:
-        rc = run_for_property(text, contract, property_name, n_of_participants, timeout, ground_truth_map)
+        rc = run_for_property(text, contract, property_name, n_of_participants, timeout, ground_truth_map, only_lus=only_lus)
         sys.exit(rc)
 
 
