@@ -15,3 +15,4 @@ out_results/*.out
 tmp/*
 src/__pycache__/*.pyc
 kind2/kind2
+out_lus/*
