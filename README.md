@@ -4,6 +4,7 @@ Prerequisites
 - Python 3.8 or newer
 - Kind 2 model checker. Ensure the Kind2 binary is available in `./kind2/kind2`.
 - cvc5 SMT-solver: `pip install cvc5`
+- antlr4: `pip install antlr4-python3-runtime==4.7.2`
 
 How to run (from home directory):
 
